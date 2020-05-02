@@ -16,7 +16,13 @@
     display: flex;
     flex-direction: column;
     overflow: scroll;
+    -ms-overflow-style: none;
   }
+
+  .cart-items::-webkit-scrollbar {
+    display: none;
+  }
+
 
   button {
     margin-top: auto;
