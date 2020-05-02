@@ -3,7 +3,7 @@ import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import SingInSignOut from "./pages/sign-in-sign-up/sign-in-sign-up.component";
-import {Route, Switch} from "react-router"
+import {Route, Switch, Redirect} from "react-router"
 import {connect} from "react-redux"
 import {auth} from "./firebase/firebase.utils";
 import {createUserProfileDocument} from "./firebase/firebase.utils";
@@ -43,7 +43,11 @@ class App extends Component {
                 <Switch>
                     <Route exact path={"/"} component={HomePage}/>
                     <Route exact path="/shop" component={ShopPage}/>
-                    <Route exact path="/signin" component={SingInSignOut}/>
+                    <Route exact path="/signin"
+                           render={() =>(
+                               this.props.currentUser ? <Redirect to={"/"}/> : <SingInSignOut/>
+                           )}
+                    />
                 </Switch>
             </div>
         );
@@ -51,8 +55,12 @@ class App extends Component {
 
 }
 
+const ms2p = ({user}) => ({
+    currentUser: user.currentUser
+})
+
 const ma2p = (dispatch) => ({
     setCurrentUser: user => dispatch(setCurrentUser(user))
 })
 
-export default connect(null, ma2p)(App);
+export default connect(ms2p, ma2p)(App);
