@@ -1,12 +1,13 @@
 import React from 'react';
 import {ReactComponent as Logo} from "../../assets/crown.svg";
-import {auth} from "../../firebase/firebase.utils";
 import {connect} from "react-redux"
 import CartIcon from "../cart-icon/cart-icon.component";
 import CartDropdown from "../cart-dropdown/cart-dropdown.component";
 import {createStructuredSelector} from "reselect";
 import {selectCartHidden} from "../../redux/cart/cart.selectors";
 import {selectCurrentUser} from "../../redux/user/user.selector";
+import {signOutStart} from "../../redux/user/user.actions";
+
 import {
     HeaderContainer,
     LogoContainer,
@@ -15,7 +16,7 @@ import {
     OptionLink
 } from "./header.styles";
 
-const Header = ({currentUser, hidden}) => {
+const Header = ({currentUser, hidden, signOutStart}) => {
     return (
         <HeaderContainer>
             <LogoContainer to="/">
@@ -26,7 +27,7 @@ const Header = ({currentUser, hidden}) => {
                 <OptionLink to="/shop">CONTACT</OptionLink>
                 {
                     currentUser ? (
-                        <OptionDiv onClick={() => auth.signOut()}>
+                        <OptionDiv onClick={signOutStart}>
                             SIGN OUT
                         </OptionDiv>
                     ) : (
@@ -47,4 +48,8 @@ const ms2p = (state) => createStructuredSelector({
     hidden: selectCartHidden
 });
 
-export default connect(ms2p)(Header);
+const ma2p = dispatch => ({
+    signOutStart: () => dispatch(signOutStart())
+})
+
+export default connect(ms2p, ma2p)(Header);

@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
-import { auth, signInWithGoogle } from "../../firebase/firebase.utils";
 import {ButtonsBarContainer, SignInContainer, SignInTitle} from "./sign-in.styles";
+import {googleSignInStart, emailSignInStart} from "../../redux/user/user.actions";
+import {connect} from "react-redux"
 
 class SignIn extends Component {
     constructor(props) {
@@ -15,13 +16,9 @@ class SignIn extends Component {
 
     handleSubmit = async event => {
         event.preventDefault()
+        const {emailSignInStart} = this.props;
         const { email, password } = this.state;
-        try {
-            await  auth.signInWithEmailAndPassword(email, password)
-            this.setState({email:"", password:""})
-        } catch (error) {
-            console.log(error);
-        }
+        emailSignInStart(email, password);
     }
 
     handleChange = event => {
@@ -30,6 +27,7 @@ class SignIn extends Component {
     }
 
     render() {
+        const {googleSignInStart, } = this.props;
         return (
             <SignInContainer>
                 <SignInTitle>I already have an account</SignInTitle>
@@ -52,7 +50,7 @@ class SignIn extends Component {
                     />
                     <ButtonsBarContainer>
                         <CustomButton type="submit">SIGN IN</CustomButton>
-                        <CustomButton type= "button" onClick={signInWithGoogle} isGoogleSignIn>
+                        <CustomButton type="button" onClick={googleSignInStart} isGoogleSignIn>
                             Sign in with Google
                         </CustomButton>
                     </ButtonsBarContainer>
@@ -62,4 +60,10 @@ class SignIn extends Component {
     }
 }
 
-export default SignIn;
+const ma2p = dispatch => ({
+    googleSignInStart: () => dispatch(googleSignInStart()),
+    emailSignInStart: (email, password) =>
+        dispatch(emailSignInStart({email, password}))
+})
+
+export default connect(null, ma2p)(SignIn);

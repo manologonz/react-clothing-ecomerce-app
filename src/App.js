@@ -6,12 +6,9 @@ import Header from "./components/header/header.component";
 import SingInSignOut from "./pages/sign-in-sign-up/sign-in-sign-up.component";
 import {Route, Switch, Redirect} from "react-router-dom"
 import {connect} from "react-redux"
-import {auth, createUserProfileDocument} from "./firebase/firebase.utils";
-// import {addCollectionAndDocuments} from "./firebase/firebase.utils";
-import {setCurrentUser} from "./redux/user/user.actions";
 import {selectCurrentUser} from "./redux/user/user.selector";
 import {createStructuredSelector} from "reselect";
-// import {selectCollectionsForPreview} from "./redux/shop/shop.selector";
+import {checkUserSession} from "./redux/user/user.actions";
 import "./App.css"
 
 class App extends Component {
@@ -19,25 +16,8 @@ class App extends Component {
     unsubscribeFromAuth = null
 
     componentDidMount() {
-        const {setCurrentUser} = this.props;
-        // const {collectionsArray} = this.props;
-        this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
-            if(userAuth){
-                const userRef = await createUserProfileDocument(userAuth)
-                userRef.onSnapshot(snapshot => {
-                    setCurrentUser({
-                            id: snapshot.id,
-                            ...snapshot.data()
-                    });
-                });
-            } else {
-                setCurrentUser(userAuth);
-                // addCollectionAndDocuments(
-                //     'collections',
-                //     collectionsArray.map(({title, items}) => ({title, items}))
-                // )
-            }
-        })
+        const {checkUserSession} = this.props;
+        checkUserSession()
     }
 
     componentWillUnmount() {
@@ -70,8 +50,8 @@ const ms2p = ({user}) => createStructuredSelector({
     // collectionsArray: selectCollectionsForPreview
 })
 
-const ma2p = (dispatch) => ({
-    setCurrentUser: user => dispatch(setCurrentUser(user))
+const ma2p = dispatch => ({
+    checkUserSession: () => dispatch(checkUserSession())
 })
 
 export default connect(ms2p, ma2p)(App);
